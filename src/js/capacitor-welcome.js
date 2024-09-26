@@ -1,5 +1,5 @@
-import { Browser } from "@capacitor/browser";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { FilePicker } from '@capawesome/capacitor-file-picker';
 
 window.customElements.define(
   "capacitor-welcome",
@@ -11,36 +11,40 @@ window.customElements.define(
 
       const root = this.attachShadow({ mode: "open" });
       root.innerHTML = `
-    <main>
-      <h1>Capacitor App</h1>
-      <p>
-        This project is used to create a minimal, reproducible example. Just add
-        the affected Capacitor platforms and plugins.
-      </p>
-      <label for="myInput">Website:</label>
-      <input
-        type="text"
-        id="myInput"
-        name="myInput"
-        value="https://capacitorjs.com/"
-      />
-      <button id="open-browser">Open Browser</button>
-    </main>
+<div>
+      <main>
+      <h1>TEST File Picker</h1>
+        <p>
+          <button class="button" id="select-images">Select images</button>
+        </p>
+        <p>
+          <div id="images" style="max-width: 100%">
+        </p>
+      </main>
+    </div>
     `;
     }
 
     connectedCallback() {
       const self = this;
 
-      self.shadowRoot
-        .querySelector("#open-browser")
-        .addEventListener("click", async function (event) {
-          const input = self.shadowRoot.getElementById("myInput").value;
-          if (!input) {
-            return;
+      self.shadowRoot.querySelector('#select-images').addEventListener('click', async function (e) {
+        try {
+
+          const results = await FilePicker.pickImages();
+
+          alert(`Selected ${results.files.length} images`);
+
+          const images = self.shadowRoot.querySelector('#images');
+          results.files.forEach((file) => {
+            images.innerHTML += "<br><br>" + file.name;
           }
-          await Browser.open({ url: input });
-        });
+          );
+
+        } catch (e) {
+          console.warn('User cancelled', e);
+        }
+      });
     }
   },
 );
